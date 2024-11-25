@@ -40,7 +40,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_empresas` WHERE 1;");
             $cmbEmpresas   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbEmpresas = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }

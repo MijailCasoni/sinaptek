@@ -13,14 +13,14 @@
             <div class="card card-info" style="padding-left: 0px;padding-right: 0px;">
               <div class="card-header" style="padding-bottom: 0px;">
                 <div class="form-group">
-                  <h3 class="card-title col-md-2">Informes</h3>
+                  <h3 class="card-title col-md-4">Informe de Evaluación</h3>
                   <h3 class="card-title col-md-2" id="tit_informe"></h3>
                 </div>
               </div>
               <div class="card-body" style="padding-bottom: 0px;">
                 <div class="row">
                   <!--Input cartera-->
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <div class="form-group">
                       <label for="info_cartera">Cartera</label>
                       <select class="form-control" id="info_cartera">
@@ -42,18 +42,56 @@
                       </select>
                     </div>
                   </div>
-                  <!--Fecha inicio-->
+                  <!--input Agente-->
                   <div class="col-md-2">
-                    <label for="fecha_ini">Fecha Inicio</label>
-                    <input type="text" class="form-control fecha" id="fecha_ini">
+                    <div class="form-group">
+                      <label for ="info_entrega">Entrega</label> 
+                      <select class="form-control" id="info_entrega" name = "info_entrega">
+                        <option value="0" data-codigo="0">Seleccione...</option>                   
+                      </select>
+                    </div>
                   </div>
-                  <!--Fecha fin-->
+                  <!--MES-->
                   <div class="col-md-2">
-                    <label for="fecha_fin">Fecha Fin</label>
-                    <input type="text" class="form-control fecha" id="fecha_fin">
+                    <label for="mes_ini">Mes</label> 
+                    <select class="form-control" id="cmb_mes"> 
+                      <?php 
+                        $allMonths=array("ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE");
+                        $now = new DateTime();
+                        $thisMonth=$now->format('n');
+                        $Month=12;
+                        $rangeMonths = array_slice($allMonths, 0, $Month);                      
+                        foreach ($rangeMonths as $k=>$month){
+                          $v=$k+1;
+                          if($v == $thisMonth){
+                            echo '<option value="'.$v.'" selected>'.$month.'</option>';
+                          }else{
+                            echo '<option value="'.$v.'">'.$month.'</option>';
+                          }
+                        }
+                      ?>
+                    </select>
+                  </div>
+                  <!--YEAR-->
+                  <div class="col-md-1">
+                    <label for="year_ini">Año</label>
+                    <select class="form-control" id="cmb_year">
+                      <?php 
+                        $date = (new DateTime)->format("Y");
+                        $year = date("Y");
+                        for ($i=2022; $i<=$year; $i++){
+                          if($year == $date){
+                            echo '<option value="'.$i.'" selected>'.$i.'</option>';
+                          }else{
+                            echo '<option value="'.$i.'">'.$i.'</option>';
+                          }
+                          
+                        }
+                      ?>
+                    </select>
                   </div>
                   <!--Botón search-->
-                  <div class="col-md-2" style="padding-top:  25px;">
+                  <div class="col-md-2" style="padding-top:  32px;">
                     <button type="button" class=" btn btn-primary " id="button_buscar"> Buscar </button>
                   </div>
                 </div>
@@ -80,24 +118,14 @@
 </body>
 @include('layouts.script')
 <script type="text/javascript">
-  $(function(){
-    $(".fecha").datepicker({
-      dateFormat: 'dd/mm/yy',
-      firstDay: 1
-    }).datepicker("setDate", new Date());
-    
-  });
-</script>
+$("#button_buscar").on("click", function(e){
 
-
-<script type="text/javascript">
- $("#button_buscar").on("click", function(e){
- // alert("Funciona botón");
   var cart_info  = $("#info_cartera").val();
   var agent_info = $("#info_agente").val();
+  var info_entrega = $("#info_entrega").val();
   var agent_nom  = $('select[id="info_agente"] option:selected').text();
-  var fech_init  = $("#fecha_ini").val();
-  var fech_fin   = $("#fecha_fin").val();
+  var cmb_mes    = $("#cmb_mes").val();
+  var cmb_year   = $("#cmb_year").val();
   var sumAccion  = 0;
   var cont       = 0;
   var error      = 0;
@@ -105,14 +133,15 @@
 
   $('#nomageeval').html('<b>  '+agent_nom+'</b>');
   
-
   if (cart_info == " " || cart_info == 0 ){
       error = 1;
   }else if (agent_info == " " || agent_info == 0 ){
       error = 1;
-  }else if (fech_init == " " || fech_init == 0 ){
+  }else if (info_entrega == " " || info_entrega == 0 ){
       error = 1;
-  }else if (fech_fin == " " || fech_fin == 0 ){
+  }else if (cmb_mes == " " || cmb_mes == 0 ){
+      error = 1;
+  }else if (cmb_year == " " || cmb_year == 0 ){
       error = 1;
   }
 
@@ -123,8 +152,9 @@
         type: 'POST',
         data:{cart_info:cart_info,
               agent_info:agent_info,
-              fech_init:fech_init,
-              fech_fin:fech_fin,
+              info_entrega:info_entrega,
+              cmb_mes:cmb_mes,
+              cmb_year:cmb_year,
                 },
         dataType: 'JSON',
         xhrFields: {withCredentials: true}, 
@@ -282,7 +312,7 @@
   }else{
      alert("Debe llenar todos los datos" + error);
   }
- });
+});
 
 function cargadatatable(){
   // $('#tbl_informe_eva').css("display", "block");
@@ -307,7 +337,7 @@ function cargadatatable(){
 </script>
 <!-- COMBO DE CARTERA -->
 <script type="text/javascript">
-  $('#info_cartera').on('change', function(){
+$('#info_cartera').on('change', function(){
     var cartera = $('#info_cartera').val();
   
     if(cartera!=0){
@@ -335,6 +365,38 @@ function cargadatatable(){
     }else{
       $("#info_agente").html('<option value="0">Seleccione...</option>');
     } 
-  });
-</script>
+});
+$('#info_agente').on('change', function(){
+    var info_agente = $('#info_agente').val();
+  
+    if(info_agente!=0){
+      $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: "{{ route('ajaxinfcartera') }}",
+        type: 'POST',
+        data:{info_agente:info_agente},
+        dataType: 'JSON',
+        xhrFields: {withCredentials: true}, 
+        success: function (data) {
+        //console.log(data.cmbcarteras);
+          $("#info_entrega").html('');   
+            var _html = '';
+                _html += '<option value="0">Seleccione...</option>' ;
+                data.cmbentrega.forEach(e=>{
+                  _html += '<option value="'+e.num_envio+'">'+e.num_envio+'</option>' ;
+                })
+                $("#info_entrega").html(_html);    
+        },
+        error: function(xhr,status,jqXHR){
+          $("#info_entrega").html('error')
+        }
+      });
+    }else{
+      $("#info_entrega").html('<option value="0">Seleccione...</option>');
+    } 
+});
+
+
+
+</script> 
 @endsection

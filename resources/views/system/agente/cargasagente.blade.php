@@ -285,13 +285,15 @@
             $("#msje_agent_agent").html('<div role="alert" aria-busy="true" aria-live="assertive">Realizando la asignacion, espere un momento... <i class="fa fa-spinner fa-lg fa-spin" aria-hidden="true"></i></div>');
           },
           success: function (data) { 
-            console.log(data);
-            if(data.respuesta == true){
+            console.log(data.respuesta);
+            if(data.respuesta == 0){
               $("#msje_agent_agent").html('Serealizo el ingreso de : <b>'+nomAge+' en la cartera'+idcarteragls+'</b>');  
               $('#btncerrar').trigger('click');
               traeagentes();
+            }else if(data.respuesta > 0){
+              $("#msje_agent_agent").html('Ya existe un agente ingresado con ese nombre.');  
             }else{
-              $("#msje_agent_agent").html('Error no se pudo ingresar el agente');  
+              $("#msje_agent_agent").html('Error no se pudo ingresar el agente');
             }
           },    
           Error: function (data){

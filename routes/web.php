@@ -58,3 +58,18 @@ Route::post('/asignaAgente', 'App\Http\Controllers\CargasController@asignaAgente
 Route::post('/getdataAgente', 'App\Http\Controllers\CargasController@getdataAgente')->name('getdataAgente');
 Route::post('/creaAgente', 'App\Http\Controllers\CargasController@creaAgente')->name('creaAgente');
 Route::post('/upexcelaudio', 'App\Http\Controllers\CargasController@upexcelaudio')->name('upexcelaudio');
+Route::post('/ajaxaudiofail', 'App\Http\Controllers\escuchaController@ajaxaudiofail')->name('ajaxaudiofail');
+
+Route::get('/informesentrega', 'App\Http\Controllers\InformeController@informesentrega')->name('informesentrega');
+Route::get('/informeanual', 'App\Http\Controllers\InformeController@informeanual')->name('informeanual');
+
+Route::get('/ajaxames', 'App\Http\Controllers\InformeController@ajaxames')->name('ajaxames');
+
+Route::post('/ajaxentrega', 'App\Http\Controllers\escuchaController@ajaxentrega')->name('ajaxentrega');
+Route::get('/infentrega', 'App\Http\Controllers\InformeController@infentrega')->name('infentrega');
+
+Route::post('/ajaxinfcartera', 'App\Http\Controllers\InformeController@ajaxinfcartera')->name('ajaxinfcartera');
+Route::post('/ajaxinformeentr', 'App\Http\Controllers\InformeController@ajaxinformeentr')->name('ajaxinformeentr');
+Route::post('/ajaxinfoanual', 'App\Http\Controllers\InformeController@ajaxinfoanual')->name('ajaxinfoanual');
+Route::post('/agenteinfoanual', 'App\Http\Controllers\InformeController@ajaxagenteinfoanual')->name('ajaxagenteinfoanual');
+

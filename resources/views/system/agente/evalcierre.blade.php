@@ -13,7 +13,7 @@
             <div class="card card-info">
               <div class="card-header">
                 <div class="form-group">
-                  <h3 class="card-title col-md-2">Cierre de Evaluación</h3>
+                  <h3 class="card-title col-md-6">Cierre de Evaluación</h3>
                 </div>
               </div>
               <div class="col-md-12" id='msj_tblcierre'>
@@ -33,14 +33,22 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="form-group">
                       <label>Agente</label>
                       <select class="form-control" name="cierre_agente" id="cierre_agente">
                           <option value="">Seleccione...</option>                   
                       </select>
                     </div>
-                  </div>                  
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>Entrega</label>
+                      <select class="form-control" name="cierre_entrega" id="cierre_entrega">
+                          <option value="">Seleccione...</option>                   
+                      </select>
+                    </div>
+                  </div>                   
                 </div> 
               </div> 
             </div>
@@ -165,8 +173,39 @@
 <!-- COMBO DE AGENTE -->
 <script type="text/javascript">
   $('#cierre_agente').on('change', function(e){
-    var idagente = $('#cierre_agente').val();
-    var idagentetext = $('select[name="cierre_agente"] option:selected').text();
+    var agente = $('#cierre_agente').val();
+    $('#cierre_entrega').val(0);
+    if(agente!=0){
+      $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: "{{ route('ajaxentrega') }}",
+        type: 'POST',
+        data:{agente:agente},
+        dataType: 'JSON',
+        xhrFields: {withCredentials: true},
+        success: function (data) {
+          //console.log(data);
+          $("#cierre_entrega").html('');   
+            var _html = '';
+                _html += '<option value="0">Seleccione...</option>' ;
+                data.cmbentrega.forEach(e=>{
+                  _html += '<option value="'+e.num_envio+'">'+e.num_envio+'</option>' ;
+                })
+                $("#cierre_entrega").html(_html);    
+        },
+        error: function(xhr,status,jqXHR){
+          $("#cierre_entrega").html('error')
+        }
+      });
+    }else{
+      $("#cierre_entrega").html('<option value="0">Seleccione...</option>');
+    } 
+  }); 
+
+  $('#cierre_entrega').on('change', function(e){
+    var idagente      = $('#cierre_agente').val();
+    var idagentetext  = $('select[name="cierre_agente"] option:selected').text();
+    var entrega       = $('#cierre_entrega').val();
 
     if(idagente!=0){
       $('#nameage').html('Cerrar Evaluacion para '+idagentetext);
@@ -177,7 +216,7 @@
       $("#tbl_"+inp_tabla+"_processing.dataTables_processing").show();
       $("#tbody-"+inp_tabla+"").empty();
       var id_tabla     = "tbl_"+inp_tabla;
-      var sourceURL =url+"?idagente="+idagente;  
+      var sourceURL =url+"?idagente="+idagente+"&entrega="+entrega;  
       var dataTable;
       var oSettings;  
       $("#contnoevaluados").val('S'); 
@@ -277,27 +316,32 @@ $('#ver_eva_completo').on('click', function(){
 
 function ejecuta_cierre(){
   var idagente  = $('#cierre_agente').val();
+  var entrega   = $('#cierre_entrega').val();
   var fecha     = $('#fecha_cierre').val();
   var obscierre = $('#obscierre').val();
-  obscierre
+  //obscierre
   //console.log(fecha);
   if(idagente!=0){
       $.ajax({
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: "{{ route('ejecutacierre') }}",
         type: 'POST',
-        data:{idagente:idagente,fecha:fecha,obscierre:obscierre},
+        data:{idagente:idagente,entrega:entrega,fecha:fecha,obscierre:obscierre},
         dataType: 'JSON',
         xhrFields: {withCredentials: true},
         success: function (data) {
           //console.log(data);
-          cerrar_modal()
+          cerrar_modal();
+          
           $("#msj_tblcierre").html('');
           $('#nameage').attr('disabled', true);  
-          $("#cierre_agente").trigger('change');  
+            
           if(data.resp =='S'){
               $('#contsi').val(0);
               $('#nameage').attr('disabled', true);
+              $("#cierre_agente").trigger('change');
+              $("#cierre_entrega").trigger('change');
+              $("#divtblcierre").html('');
               $("#msj_tblcierre").html('<div class="alert alert-success alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"><i class="fa fa-fw fa-check-circle"></i> <span>Se ha cerrado el periodo correctamente</span></div>');
           }else{
             $("#msj_tblcierre").html('<div class="alert alert-danger alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"><i class="fa fa-fw fa-check-circle"></i> <span>Ha ocurrido un error en el cerrado de periodo.</span></div>');

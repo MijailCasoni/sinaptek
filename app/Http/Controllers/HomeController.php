@@ -58,7 +58,7 @@ class HomeController extends Controller
             $pauta = $db->select($sql); 
             $pau = $pauta[0]->CTA;
            
-            DB::disconnect('db_scj'); 
+            DB::disconnect('mysql'); 
         }catch(QueryException $ex){
             $errors = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
             return view('home')->with('name',0)
@@ -86,7 +86,7 @@ class HomeController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_empresas` as EM, tbl_pais as PS Where EM.pais_id = PS.pais_id;");
             $cmbempresas   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
             foreach($cmbempresas as $value){
                 $value->rutEmpresa;
                 $value->nombre_empresa ;
@@ -112,7 +112,7 @@ class HomeController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_cartera` AS CA, tbl_pais AS AP, tbl_pauta AS PA, tbl_empresas AS EM, tbl_asignacion AS AG where PA.pauta_id = CA.pauta_id AND CA.empresa_id = EM.empresa_id AND AG.nombre_usuario = '$usuario' AND AG.cartera_id = CA.cartera_id;");
             $cmbcarteras   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
             foreach($cmbcarteras as $value){
                 
                 $arrays[] =  (array) $value;
@@ -134,7 +134,7 @@ public function evaluadorestbl()
         try{
             $sql=("SELECT US.id_cartera, AG.nombre_agente, CA.nombre_cartera FROM `users` AS US, tbl_agente AS AG, tbl_cartera AS CA WHERE US.name = '$usuario' AND AG.cartera_id = US.id_cartera AND CA.cartera_id = AG.cartera_id;");
             $cmbeval   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
             foreach($cmbeval as $value){
                 $arrays[] =  (array) $value;
     }
@@ -154,7 +154,7 @@ public function audiostbl()
         try{
             $sql=("SELECT * FROM tbl_pauta;");
             $cmbaudios   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
             foreach($cmbaudios as $value){
                 $value->nombre_pauta;
                 $value->descripcion;

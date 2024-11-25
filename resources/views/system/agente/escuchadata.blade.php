@@ -175,7 +175,7 @@
               </div>
               <!-- FIN SEGUNDA ESPECIAL A FILA -->
               <!-- SEGUNDA FILA ESPECIAL B SIN CHECK -->
-              <div class="card collapse-card" id="togle3" style="margin-bottom: 0px; display: none;">
+              <div class="card collapse-card togle3" id="togle3" style="margin-bottom: 0px; display: none;">
                 <div class="card-header border-transparent" style="background-color: darkgray;">
                   <h3 id='encabezadoitem4' class="card-title"></h3>
                   <div class="card-tools">
@@ -184,7 +184,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="card-body p-0" style="display: block;">
+                <div class="card-body p-0 contacto3ro" id="contacto3ro" style="display: block;">
                   <div class="table-responsive">
                     <table class="table m-0">
                       <thead>
@@ -274,6 +274,15 @@
               <input type="text" class="form-control fecha" id="fecha_evalua" disabled>
               <label class="fa fa-calendar text-primary" for="fecha_evalua" style="position: absolute; right:90px; top:35px;"></label>
             </div>
+            <div class="col-md-4">
+              <input type="checkbox" id="sendEmailCheckbox">  ADVERTENCIA¡</input>
+              </select>
+              <label for="emailSended">Enviar nota advertencia a:</label>
+              <select id="emailSended" class="form-control">
+                <option value="1">Correo de Mauricio</option>
+              </select>
+            
+          </div>
           </div>
         </div>
         <div class="modal-footer" >
@@ -301,8 +310,8 @@
             </div>
             <div class="col-md-12">
               <div class="form-group">
-                <label for="observacion">Ingrese Observación:</label>
-                <textarea class="form-control" rows="3" id="observacion" placeholder="Observacion..."></textarea>
+                <label for="obserror">Ingrese Observación:</label>
+                <textarea class="form-control" rows="3" id="obserror" placeholder="Observacion..."></textarea>
               </div>
             </div>
             <div class="col-md-6">
@@ -435,7 +444,7 @@
       $('#tit_audio').html('AUDIO:<b>'+nomaudio+'</b>');
       $('#btn-success-items1-ff').attr("disabled", false);
       $("#divescuchaaudio").css("display", "block");
-      $("#mensajeDesplaza").html("<div class='col-md-12'><audio controls loop autoplay class='col-md-4' id='audiocalcula' preload='metadata'><source src='https://sinaptek.com/system/public/audios/"+path+"/"+nomaudio+"' type='audio/mp3'></audio><MARQUEE class='col-md-8' style='padding-bottom: 16px;font:bold;'><FONT COLOR=white>Audio Seleccionado: "+nomaudio+" / Agente: "+nomagente+"</FONT></MARQUEE></div>");
+      $("#mensajeDesplaza").html("<div class='col-md-12'><audio controls loop autoplay class='col-md-4' id='audiocalcula' preload='metadata'><source src='https://sinaptek.com/sinaptek/public/audios/"+path+"/"+nomaudio+"' type='audio/mp3'></audio><MARQUEE class='col-md-8' style='padding-bottom: 16px;font:bold;'><FONT COLOR=white>Audio Seleccionado: "+nomaudio+" / Agente: "+nomagente+"</FONT></MARQUEE></div>");
       //get_grilla(idaudio, nomaudio, nomagente)
       $('#nombreaudio').html('Audio: '+nomaudio);
       $('#evaluacioncard').css('display','block');
@@ -549,19 +558,20 @@ $('#checkbox3ero').on('change',function() {
     $("#togle2").css("display", "none");
     $("#customRadio8").prop("disabled",true);
     $("#customRadio7").prop("checked",true);
-    $("#customRadio33").prop("disabled",true);
-    $("#customRadio34").prop("checked",true);
+    // $("#customRadio33").prop("disabled",true);
+    // $("#customRadio34").prop("checked",true);
     $("#customRadio35").prop("disabled",true);
     $("#customRadio36").prop("checked",true);
     $("#trdatos3").hide();
     //$("#togle4").hide();
+
   }else{
     $("#togle3").css("display", "none");
     $("#togle2").css("display", "block");
     $("#customRadio8").prop("disabled",false);
     $("#customRadio7").prop("checked",false);
-    $("#customRadio33").prop("disabled",false);
-    $("#customRadio34").prop("checked",false);
+    // $("#customRadio33").prop("disabled",false);
+    // $("#customRadio34").prop("checked",false);
      $("#customRadio35").prop("disabled",false);
     $("#customRadio36").prop("checked",false);
     $("#trdatos3").show();
@@ -579,6 +589,9 @@ function ejecuta_cerrar_erroraudio(){
   $("#modal-erroraudio").modal("hide");
 }
 
+
+// Esta es la sección del botón de guardar que debe mandar o a error audio o a guardar mdoficación 
+
 $('#btn-success-items1-ff').on('click', function() {
   $("#fecha_evalua").datepicker({
     dateFormat: 'dd/mm/yy',
@@ -588,27 +601,27 @@ $('#btn-success-items1-ff').on('click', function() {
     dateFormat: 'dd/mm/yy',
     firstDay: 1
   }).datepicker("setDate", new Date());
-  var cuentabody = $('#cuentabody').val();
-  var cont     = 1;
-  var especial = 0;
-  var array    = [];
-  var recorre  = 0;
-  var indexrec = 0;
-  var error    = 1;
-  var notafinal= 0;
-  var item     = '';
-  var selectedItemsText = "Usted debe revisar los siguientes items:\n";
-  var selectedItems = $('input[type="radio"]:checked'); // Obtener todos los radio buttons seleccionados
+  let cuentabody = $('#cuentabody').val();
+  let cont     = 1;
+  let especial = 0;
+  let array    = [];
+  let recorre  = 0;
+  let indexrec = 0;
+  let error    = 1;
+  let notafinal= 0;
+  let item     = '';
+  let selectedItemsText = "Usted debe revisar los siguientes items:\n";
+  let selectedItems = $('input[type="radio"]:checked'); // Obtener todos los radio buttons seleccionados
 
   $('#checkbox3ero').is(':checked')?especial=1:especial=0;
   if (selectedItems.length > 0) {  // Verificar si al menos un radio button está seleccionado
     while (cuentabody > 1) {
       
-        var contchek = 0;
-        var filas    = $("#tbody"+cont+" tr").length;
+        let contchek = 0;
+        let filas    = $("#tbody"+cont+" tr").length;
           // alert(filas+'-'+contchek);
         while(contchek < filas){
-            var datos    = new Object();
+            let datos    = new Object();
             datos.cont      = $("#trdatos"+indexrec).data('cont');
             datos.accion    = $("#trdatos"+indexrec).data('accion');
             datos.atributo  = $("#trdatos"+indexrec).data('atributo');
@@ -616,19 +629,19 @@ $('#btn-success-items1-ff').on('click', function() {
             datos.pauta     = $("#trdatos"+indexrec).data('pauta');
             datos.item      = $("#trdatos"+indexrec).data('item');
             datos.ponde     = $("#trdatos"+indexrec).data('nota');
-            var item        = $("#trdatos"+indexrec).data('item');
-            var audio       = $("#trdatos"+indexrec).data('audio');
-            var pauta       = $("#trdatos"+indexrec).data('pauta');
-            var datode      = $('input[name=radiobuton'+indexrec+']:checked').val();
-            if(especial == 0 && cont != 4 || especial == 1 && cont != 3){
+            let item        = $("#trdatos"+indexrec).data('item');
+            let audio       = $("#trdatos"+indexrec).data('audio');
+            let pauta       = $("#trdatos"+indexrec).data('pauta');
+            let datode      = $('input[name=radiobuton'+indexrec+']:checked').val();
+            if(especial === 0 && cont != 4 || especial === 1 && cont != 3){
               if(datode  === undefined){
-                var error = 0;
-                var itemName = item; // Obtener el nombre del ítem
+                let error = 0;
+                let itemName = item; // Obtener el nombre del ítem
                 selectedItemsText += "- " + itemName + "\n";
               }else{
                  datos.evaluacion= datode; 
               }
-            }else if(especial == 0 && cont == 4 || especial == 1 && cont == 3){  
+            }else if(especial === 0 && cont === 4 || especial === 1 && cont === 3){  
                 datos.evaluacion='NO';
             }   
             array.push(datos);
@@ -638,25 +651,24 @@ $('#btn-success-items1-ff').on('click', function() {
       cuentabody=cuentabody-1;
       cont++;
     };
-    if(error == 0){
+    if(error === 0){
       alert(selectedItemsText);
     }else{
-      $("#modal-grabafinal").css('display', 'block');
-      $("#modal-grabafinal").modal("show");      
-    } 
-  }else {
-    if($('#erroraudio').is(':checked')) {
-      $("#modal-erroraudio").css('display', 'block');
-      $("#modal-erroraudio").modal("show");
+        if($('#erroraudio').is(':checked')) {
+        $("#modal-erroraudio").css('display', 'block');
+        $("#modal-erroraudio").modal("show");
+      }else { 
+        $("#modal-grabafinal").css('display', 'block');
+        $("#modal-grabafinal").modal("show");
+      }     
+    }
     }else{
-      alert("No se ha evaluado ningún ítem.");
-    }  
-    
-  }
-});
+      alert("No se ha evaluado ningún ítem.");    
+    }
+})
 
 
-function ejecuta_evalua(){
+function ejecuta_evalua(){ 
   var cuentabody = $('#cuentabody').val();
   var cont     = 1;
   var especial = 0;
@@ -694,7 +706,7 @@ function ejecuta_evalua(){
             var audio       = $("#trdatos"+indexrec).data('audio');
             var pauta       = $("#trdatos"+indexrec).data('pauta');
             var datode      = $('input[name=radiobuton'+indexrec+']:checked').val();
-            if(especial == 0 && cont != 4 || especial == 1 && cont != 3){
+            if(especial === 0 && cont != 4 || especial === 1 && cont != 3){
               if(datode  === undefined){
                 var error = 0;
                 var itemName = item; // Obtener el nombre del ítem
@@ -713,7 +725,7 @@ function ejecuta_evalua(){
       cont++;
     };
     //console.log(array);
-    if(error == 0){
+    if(error === 0){
       alert(selectedItemsText);
     }else{
         array.forEach(h=>{
@@ -727,10 +739,10 @@ function ejecuta_evalua(){
           url: "{{ route('ajaxaudioevaluagraba') }}",
           type: 'POST',
           dataType: 'json',
-          data: {notafinal:notafinal, array:JSON.stringify(array), audio:audio, pauta:pauta, time:time, fecha_act:fecha_act, observacion:observacion, especial:especial},
+          data: {notafinal:notafinal, array:JSON.stringify(array), audio:audio, pauta:pauta, time:time, fecha_act:fecha_act, observacion:observacion, especial:especial, agente:agente},
           beforeSend: function (data){
-            console.log(array);
-            ejecuta_cerrar();
+            //console.log(array);
+            ejecuta_cerrar_erroraudio();
             $('#btn-success-items1-ff').attr("disabled", true);
             $('#checkbox3ero').attr('disabled',true);
             $('#notaaudio').html(notafinal)
@@ -741,6 +753,7 @@ function ejecuta_evalua(){
             $("#mensajebodyeval").html('<div class="alert alert-success alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"><i class="fa fa-fw fa-check-circle"></i> <span>Se ha grabado la evaluación del audio correctamente, con una nota final de '+notafinal+'</span></div>');
             //$("audio").pause();
             $('#checkbox3ero').prop('checked', false);
+            ejecuta_cerrar();
             //$('#bodyall').html('');
             window.scrollTo(0, 0);
           },  
@@ -754,22 +767,50 @@ function ejecuta_evalua(){
   }
 };
 
+
+
 //<!-- crear un ajax al sql. Tbl grabación, numero 2,  campo st_evalua -->
+
+
+
 function ejecuta_grabaerroraudio(){
-  alert('aun en proceso de grabado');
+  var agente   = $('#sl_agente_audio').val();
+  var audio    = $('#sl_audio_general').val();
+  var fecha_act= $('#fecha_erroraud').val();
+  var obs      = $('#obserror').val();
+  var error    = 1;
+
   $.ajax({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-    url: "{{ route('ajaxaudioevaluagraba') }}",
+    url: "{{ route('ajaxaudiofail') }}",
     type: 'POST',
     dataType: 'json',
-      success: function(){
+    data: {agente:agente, audio:audio, fecha_act:fecha_act, obs:obs},
+      
+      beforeSend: function (data){
+            ejecuta_cerrar_erroraudio();
+            // $('#btn-success-items1-ff').attr("disabled", true);
+            // $('#erroraudio').attr('disabled',true);
+            $("#mensajebodyeval").html('<div role=  "alert" aria-busy="true" aria-live="assertive">Realizando grabado de evaluación, espere un momento... <i class="fa fa-spinner fa-lg fa-spin" aria-hidden="true"></i></div>');
+          },
+          success: function (data) { 
+            $('#sl_agente_audio').trigger('change');
+            if(data.ejec == true){
+              $("#mensajebodyeval").html('<div class="alert alert-success alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"><i class="fa fa-fw fa-check-circle"></i> <span>Su evaluación se guardará con error de audio, por favor continue con el siguiente audio</span></div>');
+            }else{
+              $("#mensajebodyeval").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> No se pudo grabar evaluación consulte TI. </div>');  
+            }
+            
+            
+            
+          },  
+          error: function (data){ 
+             $("#mensajebodyeval").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> No se pudo grabar evaluación consulte TI. </div>');  
+          }
 
-      }
-
-  })
+      });
 }
 </script>
-
 
 
 <!--Creación de vistas de tabla de forma dinámica-->
@@ -939,5 +980,38 @@ function fn_erroraudio(){
     $("#togle4").show ();
   }
 }
+</script>
+
+<script type="text/javascript">
+  document.getElementById('grabarButton').addEventListener('click', function() {
+    const agent = document.getElementById('sl_agente_audio').value;
+    const audioName = document.getElementById('sl_audio_general').value;
+    const observacion = document.getElementById('observacion').value;
+    const sendMail = document.getElementById('sendEmailCheckbox').checked;
+    
+    fetch('/send-evaluation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ agent, audio_name: audioName, observacion })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Correo enviado exitosamente.");
+        } else {
+            alert("Error al enviar correo: " + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script> $(document).ready(function()
+ { $('#checkbox3ero').change(function() {
+  let especial = $(this).is(':checked') ? 1 : 0; if (especial === 1) { $('#togle3').show(); } else { $('#togle3').hide(); } }); }); 
 </script>
 @endsection

@@ -57,6 +57,18 @@
                   <p>Informe Evaluación</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('informesentrega') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Informe Promedio</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('informeanual') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Informe Anual</p>
+                </a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">

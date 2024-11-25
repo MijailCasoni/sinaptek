@@ -42,7 +42,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_empresas` WHERE 1;");
             $cmbEmpresas   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbEmpresas = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }
@@ -59,7 +59,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_cartera` WHERE empresa_id = $idEmpresa;");
             $cmbCarteras   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbCarteras = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }
@@ -74,7 +74,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_pauta` WHERE id_cartera_dest = $idCartera;");
             $cmbPautas   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbPautas = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }
@@ -91,7 +91,7 @@ class CargasController extends Controller
             $sql=("SELECT * FROM `tbl_agente` WHERE cartera_id = $idCartera;");
             //log::debug($sql);
             $cmbAgentes   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbAgentes = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }
@@ -107,7 +107,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM tbl_agente;");
             $cmbAgentes   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbAgentes = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }    
@@ -115,7 +115,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM `tbl_empresas` WHERE 1;");
             $cmbEmpresas   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $cmbEmpresas = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }
@@ -133,7 +133,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM tbl_agente;");
             $cmbAgentes   = $db->select($sql);  
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $msjCartera = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }    
@@ -151,7 +151,7 @@ class CargasController extends Controller
         try{
             $sql=("UPDATE tbl_agente SET cartera_id=$idcartera where agente_id = $idAgente ;");
             $respuesta = $db->statement($sql);  
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $respuesta = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }    
@@ -167,7 +167,7 @@ class CargasController extends Controller
         try{
             $sql=("SELECT * FROM tbl_agente AS AG, tbl_cartera AS CA where AG.agente_id = $idAgente AND AG.cartera_id = CA.cartera_id;");
             $msjAge   = $db->select($sql); 
-            DB::disconnect('db_scj');
+            DB::disconnect('mysql');
         }catch(QueryException $ex){
             $msjAge = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
         }    
@@ -182,17 +182,28 @@ class CargasController extends Controller
         $nomAge    = $request->input('nomAge');
         $idEmpresa = $request->input('idEmpresa');
         $idcartera = $request->input('idcartera'); 
+        $cuenta    = 0;     
         $db= DB::connection('mysql');
         try{
-            $sql=("INSERT INTO tbl_agente (cartera_id, nombre_agente, id_audio) VALUES ($idcartera, '$nomAge', 0)");
-            log::debug($sql);
-            $respuesta = $db->statement($sql);  
-            DB::disconnect('db_scj');
+            $sql=("SELECT COUNT(*) AS contar FROM `tbl_agente` WHERE nombre_agente = LOWER('$nomAge')");
+            $result = $db->select($sql);
+            foreach($result as $value) {
+                $cuenta     = $value->contar;
+            }
+            if($cuenta == 0){
+                try{
+                    $sql=("INSERT INTO tbl_agente (cartera_id, nombre_agente, id_audio) VALUES ($idcartera, LOWER('$nomAge'), 0)");
+                    $respuesta = $db->statement($sql);  
+                    DB::disconnect('mysql');
+                }catch(QueryException $ex){
+                    $respuesta = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
+                } 
+            }    
         }catch(QueryException $ex){
             $respuesta = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
-        }    
+        }      
 
-        return response()->json(['respuesta' => $respuesta]);
+        return response()->json(['respuesta' => $cuenta]);
     } 
 
 
@@ -207,12 +218,15 @@ class CargasController extends Controller
         $empresa        = $request->input('empresa');
         $cartera        = $request->input('cartera');
         $pauta          = $request->input('pauta');
-        $agente         = $request->input('agente');
-        $path           = '/'.$request->input('path');
+        // $agente         = $request->input('agente');
+        $path           = $request->input('path');
         $entrega        = $request->input('entrega');
         $name           = $request->input('name');
         $fechaAux       = $request->input('fechaEtapa');
         $fechaEtapa     = implode('-',array_reverse(explode('/', $fechaAux)));
+        $arr_fecha      = explode('/', $fechaAux);
+        $mes            = $arr_fecha[1];
+        $year           = $arr_fecha[2];
         $fecha          = date('Y-m-d');
         $sql2           = '';
         $sql3           = array('');
@@ -220,28 +234,46 @@ class CargasController extends Controller
         $auxcont        = 0;
         $nombre_aux     = explode($extension, $nameArch);
         $nombre_final   = $nombre_aux[0].'txt';
-
+        $idage          = 0;
+        $audioaux       = array('');
+        
         foreach ($datos as $vals){
             $TotalFila = 0;       
             foreach ($vals as $val=>$elements) {
                 if ($TotalFila <= $cont){
                     $sql3[$TotalFila] ="".$elements."";
+                    
                 }
+                if ($TotalFila == 2){
+                    $db= DB::connection('mysql');
+                    try{
+                        $sql=("SELECT * FROM tbl_agente where nombre_agente = LOWER('$sql3[2]')");
+                        $result   = $db->select($sql); 
+                        foreach ($result as $value){
+                            $idage= $value->agente_id; 
+                        }    
+                        DB::disconnect('mysql');
+                    }catch(QueryException $ex){
+                        $msjAge = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
+                    } 
+                    $audio = $sql3[0];
+                    $rut   = $sql3[1];
+                }                
                 $TotalFila = $TotalFila+1;                  
             }
             
 
             $db= DB::connection('mysql');
             try{
-                $sql=("INSERT INTO tbl_grabacion (mandante_id, cartera_id, pauta_id, agente_id, nombre_graba, path, fecha_carga, fecha, num_envio, rut_cliente) VALUES ($empresa, $cartera, $pauta, $agente, '$sql3[0]', '$path', '$fecha', '$fechaEtapa', $entrega, $sql3[1]) ");
-                //log::debug($sql);
-                $respuesta = $db->statement($sql);  
-                DB::disconnect('db_scj');
+                $sql2=("INSERT INTO tbl_grabacion (mandante_id, cartera_id, pauta_id, agente_id, nombre_graba, ruta, fecha_carga, fecha, mes, year, num_envio, rut_cliente) VALUES ($empresa, $cartera, $pauta, $idage, '$audio', '$path', '$fecha', '$fechaEtapa', $mes, $year, $entrega, $rut) ");
+               log::debug($sql2);
+                $respuesta = $db->statement($sql2);  
+                DB::disconnect('mysql');
             }catch(QueryException $ex){
                 $respuesta = new MessageBag(['aviso_g' => ["error."] ,'aviso_tipo'=>['alert-danger']] );    
             }   
             $respuestas[$auxcont] =  $respuesta;
-            $audioaux[$auxcont]   =  $sql3[0];  
+            $audioaux[$auxcont]   =  $audio;  
             $auxcont++;
         }    
         

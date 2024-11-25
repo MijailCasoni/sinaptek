@@ -54,14 +54,14 @@
                     </div>
                   </div>
                   <!--Input Agente-->
-                  <div class="col-md-3">
+                  <!-- <div class="col-md-3">
                     <div class="form-group">
                       <label for="sl_agente_car">Agente</label>
                       <select class="form-control" id="sl_agente_car" disabled>
                         <option value="0" data-codigo="0">Seleccione...</option>
                       </select>
                     </div>
-                  </div>
+                  </div> -->
                   <!--Input datos-->
                   <div class="col-md-3">
                     <div class="form-group">
@@ -196,38 +196,38 @@
     }
   });
 
-  $('#sl_pauta_car').on('change', function(){
-    var idPauta   = $('#sl_pauta_car').val();
-    var idCartera = $('#sl_cartera_car').val();
-    //console.log(idCartera);
-    if(idPauta == 0){
-       $('#sl_agente_car').val(0);
-      $('#sl_agente_car').attr('disabled', true);
-    }else{
-      $('#sl_agente_car').attr('disabled', false);
-      $.ajax({
-        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-        url: "{{ route('cargacmbagente') }}",
-          type: 'POST',
-          dataType: 'json',
-          data: {idCartera:idCartera},
-          beforeSend: function (data){
-          },
-          success: function (data) { 
-            //console.log(data);
-            var _html = '';
-                _html += '<option value="0">Seleccione...</option>' ;
-                data.cmbAgentes.forEach(e=>{
-                  _html += '<option value="'+e.agente_id+'">'+e.nombre_agente+'</option>' ;
-                })
-                $("#sl_agente_car").html(_html);  
-          },  
-          Error: function (data){
-            fn_avisos_js({mensaje:"<b>¡¡¡ ADVERTENCIA !!!</b> No se pudo cargar consulte TI. ",tipo:"Error",label:"Error",id_div:"msjcargas"});    
-          }
-        }); 
-    }
-  });
+  // $('#sl_pauta_car').on('change', function(){
+  //   var idPauta   = $('#sl_pauta_car').val();
+  //   var idCartera = $('#sl_cartera_car').val();
+  //   //console.log(idCartera);
+  //   if(idPauta == 0){
+  //      $('#sl_agente_car').val(0);
+  //     $('#sl_agente_car').attr('disabled', true);
+  //   }else{
+  //     $('#sl_agente_car').attr('disabled', false);
+  //     $.ajax({
+  //       headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+  //       url: "{{ route('cargacmbagente') }}",
+  //         type: 'POST',
+  //         dataType: 'json',
+  //         data: {idCartera:idCartera},
+  //         beforeSend: function (data){
+  //         },
+  //         success: function (data) { 
+  //           //console.log(data);
+  //           var _html = '';
+  //               _html += '<option value="0">Seleccione...</option>' ;
+  //               data.cmbAgentes.forEach(e=>{
+  //                 _html += '<option value="'+e.agente_id+'">'+e.nombre_agente+'</option>' ;
+  //               })
+  //               $("#sl_agente_car").html(_html);  
+  //         },  
+  //         Error: function (data){
+  //           fn_avisos_js({mensaje:"<b>¡¡¡ ADVERTENCIA !!!</b> No se pudo cargar consulte TI. ",tipo:"Error",label:"Error",id_div:"msjcargas"});    
+  //         }
+  //       }); 
+  //   }
+  // });
 
   $('#lbl_select').on('click', function(oEvent){
       $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Archivo Leído</div>');
@@ -290,13 +290,13 @@
         var empresa       = $('#sl_empresa_car').val();
         var cartera       = $('#sl_cartera_car').val();
         var pauta         = $('#sl_pauta_car').val();
-        var agente        = $('#sl_agente_car').val();
+        // var agente        = $('#sl_agente_car').val();
         var path          = $('#ingresoPath').val();
         var entrega       = $('#sl_cantent').val();
         var name          = $('#lbl_sel').val();
         var fechaEtapa    = $('#fechaEtapa').val();
         var _html         = '';
-        var swcont        = 0;
+        var swcont        = 1;
 
         // let file = lbl_sel.files[0];
         // console.log(file);
@@ -306,8 +306,8 @@
           $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Debe Seleccionar la cartera</div>');
         }else if(pauta == 0){
           $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Debe Seleccionar la pauta</div>');
-        }else if(agente == 0){
-          $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Debe Seleccionar el agente</div>');
+        // }else if(agente == 0){
+        //   $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Debe Seleccionar el agente</div>');
         }else if(path == ''){
           $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Debe Seleccionar la ruta</div>');
         }else if(entrega == 0){
@@ -322,7 +322,7 @@
             url: "{{ route('upexcelaudio') }}",
             type: 'POST',
             dataType: 'json',
-            data: {datos: JSON.stringify(datos), cantidad_reg:cantidad_reg, cont:cont,cabecera: JSON.stringify(cabecera),nameArch:name, empresa:empresa, cartera:cartera, pauta:pauta, agente:agente, path:path, entrega:entrega, name:name, fechaEtapa:fechaEtapa},
+            data: {datos: JSON.stringify(datos), cantidad_reg:cantidad_reg, cont:cont,cabecera: JSON.stringify(cabecera),nameArch:name, empresa:empresa, cartera:cartera, pauta:pauta, path:path, entrega:entrega, name:name, fechaEtapa:fechaEtapa},
             beforeSend: function (data){
               $("#msjcargas").html('<div class="alert alert-warning alert-dismissible col-xs-12" role="alert" aria-busy="true" aria-live="assertive"> Realizando la carga, espere un momento... <i class="fa fa-spinner fa-lg fa-spin" aria-hidden="true"></i></div>');
               $("#sc_btn_subir_ex").attr("disabled",true);
